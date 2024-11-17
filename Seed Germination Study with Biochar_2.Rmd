@@ -1,0 +1,136 @@
+---
+title: "Class Project: Preliminary Exploratory Data Analysis"
+subtitle: "Seed Germination Study with Biochar"
+author: "Parsha Barnhart"
+date: "11/11/2024"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(readr)
+```
+
+```{r}
+Seed_Germination_Study <- read_csv("C:/Users/17174/OneDrive/Desktop/PSU/STAT184/ProjectDataSets/Biochar_Germ_All_Species_For_SH_053118.csv")
+
+str(Seed_Germination_Study)
+
+
+```
+```{r}
+Biochar_Germination_Study <- read_csv("C:/Users/17174/OneDrive/Desktop/PSU/STAT184/ProjectDataSets/Biochar_Germination_Study_Biochar_pH_EC_P.csv")
+
+str(Biochar_Germination_Study)
+```
+
+Guiding Question
+
+How do different biochar feedstocks and pyrolysis temperatures influence seed germination, early seedling growth, and soil characteristics, and which biochar treatments are most effective for improving soil health and promoting plant establishment in degraded soils?
+
+Become acquainted with your data sources:
+
+1. Where did you find the data?
+
+The data comes from a Seed Germination Study with Biochar that is publicly available on the U.S. EPA ScienceHub website. The dataset is associated with the study titled "A Rapid-Test for Screening Biochar Effects on Seed Germination" and was published in the journal Communications in Soil Science and Plant Analysis (2018).
+
+2. Who collected/maintains the data?
+
+The data was collected by Mark Johnson, T. Shiroyama, J.M. Novak, and D.M. Olszyk. It is maintained by the U.S. Environmental Protection Agency and the Office of Research and Development.
+
+3. When and why was the data originally collected?
+
+The original study was completed on December 6, 2017 and the metadata was updated in November 2020.
+The purpose for the data collected was to evaluate the effects of biochar on seed germination and early plant growth. The study aimed to determine whether biochar can serve as a soil amendment to improve soil properties like pH, electrical conductivity and extractable phosphorus, which in turn affect seed germination and early seedling growth. The rapid-test methodology was developed as a way to screen for biochar effects quickly.
+
+4. What does a case represent in each data source, and how many total cases are available?
+
+Each case represents the germination and growth measurements of a specific plant species. Where the plant species; cabbage, carrot, cucumber, lettuce, oat, onion, perennial ryegrass, or tomato are grown in soil amended with a biochar treatment.
+
+The dataset includes data on 8 plant species and considers 2 soil types, using 18 different biochar treatments from 6 feedstocks and 3 pyrolysis temperatures: 350°C, 500°C, and 700°C.
+
+Total cases in the dataset are as follows:
+18 biochar treatments × 2 soil types × 8 plant species = 288 total cases.
+
+5. What are some of the variables that you plan to use? 
+
+Quantitative Variables:
+Germination Percent: Percentage of seeds that germinated
+Shoot Dry Weight: Weight of the plant shoots after germination
+Soil pH: pH level of the soil after the experiment
+Electrical Conductivity: A measure of soil salinity or nutrient availability
+Extractable Phosphorus: A measure of phosphorus available in the soil for plant uptake
+
+Categorical Variables:
+Plant Species: Cabbage, carrot, cucumber, lettuce, oat, onion, perennial ryegrass, tomato
+Soil Type: Norfolk, Coxville
+Biochar Feedstock: Pine Chips, Poultry Litter, Swine Solids, Switchgrass, Blends of PC/PL 55 and 82
+***Pyrolysis Temperature: 350°C, 500°C, 700°C - Would this be quantitative since you can measure the degrees?
+
+```{r}
+Joined_Germination_Study <- inner_join(Seed_Germination_Study, Biochar_Germination_Study, by = "pH")
+
+```
+
+Explore intuition related to the research question:
+
+Create some informative plots and summary statistics.
+Describe preliminary observations and intuition about the research question.
+```{r}
+library(esquisse)
+
+esquisser(Seed_Germination_Study)
+```
+```{r}
+#Plots germination percentage by biochar feedstock type
+ggplot(Seed_Germination_Study) +
+  aes(x = feedstock, y = aspercent) +
+  geom_boxplot(fill = "#469AB4") +
+  labs(
+    x = "Biochar Feedstock",
+    y = "Germination Percent",
+    title = "Germination Percent by Biochar Feedstock"
+  ) +
+  theme_minimal()
+
+```
+The above plots germination percentage by biochar feedstock type
+
+```{r}
+# Plot shoot dry weight by biochar feedstock
+ggplot(Seed_Germination_Study) +
+  aes(x = feedstock, y = shootdw) +
+  geom_bar(stat = "summary", fun = "sum", fill = "#176C17") +
+  labs(
+    x = "Biochar Feedstock",
+    y = "Mean Shoot Dry Weight (g)",
+    title = "Average Shoot Dry Weight by Biochar Feedstock"
+  ) +
+  theme_minimal()
+
+```
+The above chart plots shoot dry weight by biochar feedstock
+
+```{r}
+# Summary statistics for soil characteristics (pH, EC, P) by feedstock
+Seed_Germination_Study %>%
+  group_by(feedstock) %>%
+  summarize(
+    Mean_pH = mean(pH, na.rm = TRUE),
+    Mean_EC = mean(EC, na.rm = TRUE),
+    Mean_P = mean(P, na.rm = TRUE)
+  )
+
+```
+ The above summary represents statistics for soil characteristics (pH, EC, P) by feedstock that included Biochar.
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
